@@ -82,4 +82,4 @@
         2. 单向掩码(seq2seq objective)：要满足自回归 LM 的条件，即只能通过上文来预测被 mask 掉的词。  
     - ### 如何在下游任务上做微调  
         1. VQA：将 VQA 视作一个多标签分类 ([多标签分类任务中的损失函数](https://zhuanlan.zhihu.com/p/98322026)) 问题，将 [CLS] 和 [SEP] 最终的输出做 element-wise product，然后接一个 MLP (Linear + ReLU + Linear + Sigmoid) 进行分类即可。  
-        2. Image Captioning：首先将图片、[CLS]、[SEP] 输入模型，然后喂给模型一个 [MASK] 标记即开始生成，用上文来预测 [MASK] 对应的词，重复以上生成过程，直到生成 [STOP] 标记。  
+        2. Image Captioning：首先将图片、[CLS]、[SEP] 输入模型，然后喂给模型一个 [MASK] 标记即开始生成，用上文来预测 [MASK] 对应的词，重复以上生成过程，直到生成 [STOP] 标记。 
