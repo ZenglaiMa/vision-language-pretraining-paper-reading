@@ -96,6 +96,7 @@
             - Masked Region Feature Regression (MRFR)：使用 L2 regression 来预测被 mask 掉的 region 的 RoI Feature。  
             - Masked Region Classification (MRC)：预测被 mask 掉的 region 的语义类别。  
             - Masked Region Classification with KL-Divergence (MRC-kl)：预测被 mask 掉的 region 的语义类别分布，优化目标是最小化该其与 grount-truth (由目标检测器给出) 类别分布的 KL 散度。  
+        <br/>  
         > 本文的一个创新点就是提出了一种与之前工作不同的 mask 机制 (conditional masking)，即在每一轮，只 mask 掉一种模态的信息，另一模态的信息保持完整 (要么只 mask 掉文本中的 tokens，要么只 mask 掉图片中的 region)。文中说这样做更符合人类的思考方式，即掩盖一段文字，可以通过其余文字和图像进行补齐，反之亦然。  
         - Image-Text Matching (ITM)：[CLS] (模型图中未画出) 的输出接分类器做二分类，判断图文是否匹配 (类似于 BERT 中的 NSP)。  
         - Word-Region Alignment (WRA)：本文提出的一个新的预训练任务 —— 对齐 word 和 region，使用最优传输理论 (Optimal Transpor) 来做这个任务。  
