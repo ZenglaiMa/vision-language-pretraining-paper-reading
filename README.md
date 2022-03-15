@@ -1,7 +1,7 @@
 # Reading Notes  
 
 - ## (*NIPS2019_ViLBERT*) ViLBERT: Pretraining Task-Agnostic Visiolinguistic Representations for Vision-and-Language Tasks. [[paper](https://arxiv.org/pdf/1908.02265.pdf)] [[code](https://github.com/jiasenlu/vilbert_beta)]  
-    - ### 文章创新点  
+    - ### 创新点  
         Vision-Language-Pretraining 的开山之作。  
     - ### 模型结构  
         模型整体采用双流 BERT (Transformer) 架构。  
@@ -50,7 +50,7 @@
         - #### Image Question Answering  
 
 - ## (*ACL2020_VisualBERT*) VisualBERT: A Simple and Performant Baseline for Vision and Language. [[paper](https://arxiv.org/pdf/1908.03557.pdf)] [[code](https://github.com/uclanlp/visualbert)]  
-    - ### 文章创新点  
+    - ### 创新点  
         上面介绍的 LXMERT 和 ViLBERT 都是双流模型，而本篇的 VisualBERT 便是单流模型的开篇之作。(双流模型可以视为视觉表征和语言表征的后融合，单流模型可以视为视觉表征和语言表征的早融合。)  
     - ### 模型结构  
         整体模型架构就是一个 EBRT。  
@@ -65,7 +65,7 @@
         [CLS] 的最终输出即为视觉-语言的联合表征，利用它来做下游任务，进行微调。  
 
 - ## (*AAAI2020_Unified-VLP*) Unified Vision-Language Pre-Training for Image Captioning and VQA. [[paper](https://arxiv.org/pdf/1909.11059.pdf)] [[code](https://github.com/LuoweiZhou/VLP)]  
-    - ### 文章创新点  
+    - ### 创新点  
         1. 提出了一个统一的 VLP 模型，既可以做 Vision-Language 理解任务(如 VQA)，也可以做生成任务(如 Image Captioning).  
         2. 统一了 Encoder 和 Decoder.  
     - ### 模型结构  
@@ -83,3 +83,19 @@
     - ### 如何在下游任务上做微调  
         1. VQA：将 VQA 视作一个多标签分类 ([多标签分类任务中的损失函数](https://zhuanlan.zhihu.com/p/98322026)) 问题，将 [CLS] 和 [SEP] 最终的输出做 element-wise product，然后接一个 MLP (Linear + ReLU + Linear + Sigmoid) 进行分类即可。  
         2. Image Captioning：首先将图片、[CLS]、[SEP] 输入模型，然后喂给模型一个 [MASK] 标记即开始生成，用上文来预测 [MASK] 对应的词，重复以上生成过程，直到生成 [STOP] 标记。  
+
+- ## (*ECCV2020_UNITER*) UNITER: UNiversal Image-TExt Representation Learning. [[paper](https://arxiv.org/pdf/1909.11740.pdf)] [[code](https://github.com/ChenRocks/UNITER)]  
+    - ### 创新点  
+        1. 提出了一种基于条件的 mask 机制 (conditional masking)；  
+        2. 提出了一个新的预训练任务 WRA (Word-Region Alignmen)。  
+    - ### 模型结构  
+        ![](./images/UNITER/1.png)  
+    - ### 预训练任务  
+        - Masked Language Model (MLM)：掩码语言模型，和 BERT 中设置相同。  
+        - Masked Region Modeling (MRM)：随机 mask 掉 15% 的 image regions (置 0)，包含以下三种形式：  
+            - Masked Region Feature Regression (MRFR)：使用 L2 regression 来预测被 mask 掉的 region 的 RoI Feature。  
+            - Masked Region Classification (MRC)：预测被 mask 掉的 region 的语义类别。  
+            - Masked Region Classification with KL-Divergence (MRC-kl)：预测被 mask 掉的 region 的语义类别分布，优化目标是最小化该其与 grount-truth (由目标检测器给出) 类别分布的 KL 散度。  
+        > 本文的一个创新点就是提出了一种与之前工作不同的 mask 机制 (conditional masking)，即在每一轮，只 mask 掉一种模态的信息，另一模态的信息保持完整 (要么只 mask 掉文本中的 tokens，要么只 mask 掉图片中的 region)。文中说这样做更符合人类的思考方式，即掩盖一段文字，可以通过其余文字和图像进行补齐，反之亦然。  
+        - Image-Text Matching (ITM)：[CLS] (模型图中未画出) 的输出接分类器做二分类，判断图文是否匹配 (类似于 BERT 中的 NSP)。  
+        - Word-Region Alignment (WRA)：本文提出的一个新的预训练任务 —— 对齐 word 和 region，使用最优传输理论 (Optimal Transpor) 来做这个任务。  
