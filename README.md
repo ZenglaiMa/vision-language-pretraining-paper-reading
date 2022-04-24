@@ -100,3 +100,19 @@
         > 本文的一个创新点就是提出了一种与之前工作不同的 mask 机制 (conditional masking)，即在每一轮，只 mask 掉一种模态的信息，另一模态的信息保持完整 (要么只 mask 掉文本中的 tokens，要么只 mask 掉图片中的 regions)，这样做的目的是避免以下情况的发生：将文本中的 car 和图片中表示 car 的 region 同时 mask 掉，因为这样模型不能很好地学到 car 这个实体在不同模态间的对齐关系。  
         - Image-Text Matching (ITM)：[CLS] (模型图中未画出) 的输出接分类器做二分类，判断图文是否匹配 (类似于 BERT 中的 NSP)。  
         - Word-Region Alignment (WRA)：本文提出的一个新的预训练任务 —— 对齐 word 和 region，使用最优传输理论 (Optimal Transpor) 来做这个任务。  
+
+- ## (*arXiv2020_Pixel-BERT*) Pixel-BERT: Aligning Image Pixels with Text by Deep Multi-Modal Transformers. [[paper](https://arxiv.org/pdf/2004.00849.pdf)]  
+    - ### 创新点  
+        先前的工作中，大都使用基于 region 的图像特征来表示图片信息，但这种方式存在以下缺点：  
+        ① region-based 特征需要由 OD (Object Detector) 得到，它是为特定的视觉任务（目标检测）而设计的，这就导致了它和语言理解任务之间的 gap；  
+        ② region-based 特征缺失了一些重要的视觉信息，比如图片中的背景、物体的形状、物体间的空间关系等；  
+        ③ region-based 特征的语义表示能力受限于特定目标检测任务的语义类别。  
+        基于以上考虑，本文用 pixel-based 特征来表示图片信息。**此外，正是因为放弃了之前被大量使用的 region features，使得 end-to-end 的预训练成为可能。**  
+    - ### 模型结构  
+        ![](./images/Pixel-BERT/1.png)  
+        - **Sentence Feature Embedding**：就是 BERT.  
+        - **Image Feature Embedding**：将图片通过 CNN 网络 (如 ResNet 或 ResNeXt)，最终得到一个像素特征矩阵 (num_channels × w × h)，然后加上一个 Semantic Embedding (目的是为了区分文本 token 和图片 token) 作为最终图片的 pixel features，并且**受 Dropout 的启发，在预训练阶段，并不是使用所有的 pixel features，而是每次随机采样一部分 (论文中设置了100个) 丢进 Transformer 中去做跨模态交互，这样可以增强模型鲁棒性并且减小预训练阶段的计算开销。**  
+        - **Corss Modality Alignment**：将两种 tokens 拼在一起丢进 Transformer 中进行跨模态的交互和对齐。  
+    - ### 预训练任务  
+        - Masked Language Model (MLM)  
+        - Image Text Matching (ITM)  
